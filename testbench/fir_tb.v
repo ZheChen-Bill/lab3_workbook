@@ -27,17 +27,11 @@ module fir_tb
     parameter Data_Num    = 600
 )();
     wire                        awready;
-    wire                        arready;
     wire                        wready;
-    wire                        rvalid;
-    wire signed [(pDATA_WIDTH-1): 0]  rdata;
     reg                         awvalid;
     reg   [(pADDR_WIDTH-1): 0]  awaddr;
-    reg                         arvalid;
-    reg   [(pADDR_WIDTH-1): 0]  araddr;
     reg                         wvalid;
     reg signed [(pDATA_WIDTH-1) : 0] wdata;
-    reg                         rready;
     reg                         ss_tvalid;
     reg signed [(pDATA_WIDTH-1) : 0] ss_tdata;
     reg                         ss_tlast;
@@ -54,17 +48,11 @@ module fir_tb
     wire                        ap_done;
     fir fir_DUT(
         .awready(awready),
-        .arready(arready),
         .wready(wready),
-        .rvalid(rvalid),
-        .rdata(rdata),
         .awvalid(awvalid),
         .awaddr(awaddr),
-        .arvalid(arvalid),
-        .araddr(araddr),
         .wvalid(wvalid),
         .wdata(wdata),
-        .rready(rready),
         .ss_tvalid(ss_tvalid),
         .ss_tdata(ss_tdata),
         .ss_tlast(ss_tlast),
