@@ -1,4 +1,4 @@
-module bram #( parameter FILENAME = "firmware.hex")
+module bram 
 (
     CLK,
     WE0,
