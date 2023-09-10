@@ -1,4 +1,3 @@
-# lab3_workbook
 # FIR - Verilog implementation
 ## Specification
 - Data_Width  32
