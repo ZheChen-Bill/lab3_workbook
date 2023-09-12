@@ -2,7 +2,7 @@
 ## Specification
 - Data_Width  32
 - Tape_Num    11
-- Data_Num    TBD
+- Data_Num    600
 Interface
 -- data_in  stream （Xn）
 -- data_out: stream ( Yn)

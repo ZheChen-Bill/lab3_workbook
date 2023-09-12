@@ -15,7 +15,7 @@ module bram
     output  reg     [31:0]  Do0;
     input   wire    [31:0]   A0;
 
-    // 16 MB (128Mb) Flash
+    // 4 MB (32Mb) Flash
 	reg [7:0] RAM[0:4*1024*1024-1];
 
 

@@ -35,18 +35,17 @@ module fir_tb
     reg                         ss_tvalid;
     reg signed [(pDATA_WIDTH-1) : 0] ss_tdata;
     reg                         ss_tlast;
-    reg                         sm_tready;
     wire                        ss_tready;
+    reg                         sm_tready;
     wire                        sm_tvalid;
     wire signed [(pDATA_WIDTH-1) : 0] sm_tdata;
     wire                        sm_tlast;
-    reg                         axi_clk;
     reg                         axis_clk;
-    reg                         axi_reset_n;
     reg                         axis_rst_n;
     reg                         ap_start;
     wire                        ap_done;
-    fir fir_DUT(
+    
+    top_module fir_DUT(
         .awready(awready),
         .wready(wready),
         .awvalid(awvalid),
@@ -56,20 +55,18 @@ module fir_tb
         .ss_tvalid(ss_tvalid),
         .ss_tdata(ss_tdata),
         .ss_tlast(ss_tlast),
-        .sm_tready(sm_tready),
         .ss_tready(ss_tready),
+        .sm_tready(sm_tready),
         .sm_tvalid(sm_tvalid),
         .sm_tdata(sm_tdata),
         .sm_tlast(sm_tlast),
-        .axi_clk(axi_clk),
         .axis_clk(axis_clk),
-        .axi_reset_n(axi_reset_n),
         .axis_rst_n(axis_rst_n),
         .ap_start(ap_start),
         .ap_done(ap_done));
 
-    reg signed [31:0] Din_list[0:599];
-    reg signed [31:0] golden_list[0:599];
+    reg signed [(pDATA_WIDTH-1):0] Din_list[0:(Data_Num-1)];
+    reg signed [(pDATA_WIDTH-1):0] golden_list[0:(Data_Num-1)];
     
     initial begin
         $dumpfile("fir.vcd");
@@ -77,42 +74,51 @@ module fir_tb
     end
     
     initial begin
-        axis_clk = 1; axi_clk = 1;
+        axis_clk = 1;
         forever begin
-            #5 axis_clk = (~axis_clk); axi_clk = (~axi_clk);
+            #5 axis_clk = (~axis_clk);
         end
+    end
+
+    initial begin
+        axis_rst_n = 0; 
+        #5 axis_rst_n = 1; 
     end
 
     integer Din, golden, input_data, golden_data, m;
     initial begin
         Din = $fopen("./samples_triangular_wave.dat","r");
         golden = $fopen("./out_gold.dat","r");
-        for(m=0;m<600;m=m+1) begin
+        for(m=0;m<Data_Num;m=m+1) begin
             input_data = $fscanf(Din,"%d", Din_list[m]);
             golden_data = $fscanf(golden,"%d", golden_list[m]);
         end
     end
 
+    integer i;
     initial begin
-        axis_rst_n = 0; axi_reset_n = 0;
-        #5 axis_rst_n = 1; axi_reset_n = 1;
+        $display("------------Start simulation-----------");
+        #10 ss_tvalid = 0;
+        #10 $display("----Start the coefficient input(AXI-Stream)----");
+        for(i=0;i<(Data_Num-1);i=i+1) begin
+            #10 ss_tlast = 0; ss(Din_list[i]);
+        end
+        #10 ss_tlast = 1; ss(Din_list[(Data_Num-1)]);
+        $display("------End the coefficient input(AXI-Stream)------");
     end
 
-    integer i;
+    integer k;
     reg error;
     initial begin
-        #10 $display("----start simulation----");
-        ss_tvalid = 0;
-        #1000
-        $display("----start input the data(AXI-lite)-----");
         error = 0;
-        for(i=0;i<599;i=i+1) begin
-            #10 ss_tlast = 0; test(Din_list[i],golden_list[i],i);
+        #10 sm_tready = 1;
+        for(k=0;k<(Data_Num-1);k=k+1) begin
+            #10 sm(golden_list[k],k);
         end
-        #10 ss_tlast = 1; test(Din_list[599],golden_list[599],599);
+        #10 sm(golden_list[(Data_Num-1)],k);
         if (error == 0) begin
-            $display("---------------------------------");
-            $display("----Congratulations! Pass----");
+            $display("---------------------------------------------");
+            $display("-----------Congratulations! Pass-------------");
         end
         else begin
         end
@@ -169,16 +175,20 @@ module fir_tb
         $display("----End the coefficient input(AXI-lite)----");
     end
 
-    task test;
+    task ss;
         input  signed [31:0] in1;
-        input  signed [31:0] in2;
-        input         [31:0] in3;
         begin
             ss_tvalid = 1;
             ss_tdata = in1;
-            sm_tready = 1;
+            wait (ss_tvalid == 1 & ss_tready == 1);
+        end
+    endtask
+
+    task sm;
+        input  signed [31:0] in2;
+        input         [31:0] in3;
+        begin
             wait (sm_tready == 1 & sm_tvalid == 1);
-            #10 sm_tready = 0; 
             if (sm_tdata != in2) begin
                 $display("[ERROR] [Pattern %d] Golden answer: %d, Your answer: %d", in3, in2, sm_tdata);
                 error = 1;
