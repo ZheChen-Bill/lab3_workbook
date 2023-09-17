@@ -218,11 +218,11 @@ module fir_tb
             rready <= 1;
             @(posedge axis_clk);
             while (!rvalid) @(posedge axis_clk);
-            if( (rdata & mask) != (exp_data & mask)) begin
+            if( (rdata & mask) !== (exp_data & mask)) begin
                 $display("ERROR: exp = %d, rdata = %d", exp_data, rdata);
                 error_coef <= 1;
             end else begin
-                $display("OK: exp = %d, rdata = %d", exp_data, rdata);
+                $display("PASS: exp = %d, rdata = %d", exp_data, rdata);
             end
         end
     endtask
@@ -248,13 +248,12 @@ module fir_tb
             sm_tready <= 1;
             @(posedge axis_clk) 
             wait(sm_tvalid);
-            while(!sm_tvalid) @(posedge axis_clk);
             if (sm_tdata != in2) begin
                 $display("[ERROR] [Pattern %d] Golden answer: %d, Your answer: %d", pcnt, in2, sm_tdata);
                 error <= 1;
             end
             else begin
-                $display("[PASS] [Pattern %d] Golden answer: %d, Your answer: %d", pcnt, in2, sm_tdata);
+//                $display("[PASS] [Pattern %d] Golden answer: %d, Your answer: %d", pcnt, in2, sm_tdata);
             end
             @(posedge axis_clk);
         end
