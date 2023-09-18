@@ -135,7 +135,7 @@ module fir_tb
             sm(golden_list[k],k);
         end
         config_read_check(12'h00, 32'h04,32'h0000_0004); // check idle = 1
-        if (error == 0 & error_coef == 0) begin
+        if (error == 0 & status_error == 0) begin
             $display("---------------------------------------------");
             $display("-----------Congratulations! Pass-------------");
         end
@@ -172,9 +172,7 @@ module fir_tb
         coef[10] =  32'd0;
     end
 
-    reg error_coef;
     initial begin
-        error_coef = 0;
         $display("----Start the coefficient input(AXI-lite)----");
         config_write(12'h10, data_length);
         for(k=0; k< Tape_Num; k=k+1) begin
