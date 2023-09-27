@@ -26,6 +26,8 @@ module fir
     output  wire                     sm_tlast, 
     input   wire                     axis_clk,
     input   wire                     axis_rst_n
+//    input   wire                     ap_start // remove the ap_start (ap_start is cfgwrite, not direct I/O signal)
+//    output  wire                     ap_done  // remove the ap_done (ap_done is cfgwrite, not direct I/O signal)
 );
 begin
 
