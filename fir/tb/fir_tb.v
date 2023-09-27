@@ -130,7 +130,7 @@ module fir_tb
     initial begin
         error = 0; status_error = 0;
         sm_tready = 1;
-        while (~sm_tvalid) @(posedge axis_clk);
+        while (!sm_tvalid) @(posedge axis_clk);
         for(k=0;k < data_length;k=k+1) begin
             sm(golden_list[k],k);
         end
@@ -245,7 +245,7 @@ module fir_tb
         begin
             sm_tready <= 1;
             @(posedge axis_clk) 
-            while(~sm_tvalid) begin
+            while(!sm_tvalid) begin
                 @(posedge axis_clk);
             end
             if (sm_tdata != in2) begin
