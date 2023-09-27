@@ -48,8 +48,7 @@ module fir_tb
     wire                        sm_tlast;
     reg                         axis_clk;
     reg                         axis_rst_n;
-//    reg                         ap_start;  remove ap_start 
-//    wire                        ap_done;   remove ap_done
+
     fir fir_DUT(
         .awready(awready),
         .wready(wready),
@@ -73,8 +72,7 @@ module fir_tb
         .sm_tlast(sm_tlast),
         .axis_clk(axis_clk),
         .axis_rst_n(axis_rst_n));
-//        .ap_start(ap_start),  remove ap_start
-//        .ap_done(ap_done));   remove ap_done
+
 
     reg signed [(pDATA_WIDTH-1):0] Din_list[0:(Data_Num-1)];
     reg signed [(pDATA_WIDTH-1):0] golden_list[0:(Data_Num-1)];
@@ -190,10 +188,7 @@ module fir_tb
         arvalid <= 0;
         $display(" Tape programming done ...");
         $display(" Start FIR");
-//        @(posedge axis_clk) ap_start <= 1;    ap_start: config write, ap_start: 0x00 [bit 0], set ap_start = 1
-//        @(posedge axis_clk) ap_start <= 0;    ap_start: config write, ap_start: 0x00 [bit 0], set ap_start = 0
         @(posedge axis_clk) config_write(12'h00, 32'h0000_0001);    // ap_start = 1
-//        @(posedge axis_clk) config_write(12'h00, 32'h0000_0000);    // ap_start = 0 (the design should deal with the condition of ap_start = 1)
         $display("----End the coefficient input(AXI-lite)----");
     end
 
