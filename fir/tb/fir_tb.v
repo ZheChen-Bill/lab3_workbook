@@ -190,10 +190,10 @@ module fir_tb
         arvalid <= 0;
         $display(" Tape programming done ...");
         $display(" Start FIR");
-//        @(posedge axis_clk) ap_start <= 1;    ap_start: config write, ap_start: 0x00 [bit 0], set ap_start = 1 for 1 clk
+//        @(posedge axis_clk) ap_start <= 1;    ap_start: config write, ap_start: 0x00 [bit 0], set ap_start = 1
 //        @(posedge axis_clk) ap_start <= 0;    ap_start: config write, ap_start: 0x00 [bit 0], set ap_start = 0
         @(posedge axis_clk) config_write(12'h00, 32'h0000_0001);    // ap_start = 1
-        @(posedge axis_clk) config_write(12'h00, 32'h0000_0000);    // ap_start = 0
+//        @(posedge axis_clk) config_write(12'h00, 32'h0000_0000);    // ap_start = 0 (the design should deal with the condition of ap_start = 1)
         $display("----End the coefficient input(AXI-lite)----");
     end
 
