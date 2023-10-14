@@ -92,14 +92,14 @@ module fir_tb
         .tap_EN(tap_EN),
         .tap_Di(tap_Di),
         .tap_A(tap_A),
-        .tap_Do(tap_Do)
+        .tap_Do(tap_Do),
 
         // ram for data
-        .tap_WE(data_WE),
-        .tap_EN(data_EN),
-        .tap_Di(data_Di),
-        .tap_A(data_A),
-        .tap_Do(data_Do)
+        .data_WE(data_WE),
+        .data_EN(data_EN),
+        .data_Di(data_Di),
+        .data_A(data_A),
+        .data_Do(data_Do),
 
         .axis_clk(axis_clk),
         .axis_rst_n(axis_rst_n)
@@ -229,13 +229,13 @@ module fir_tb
         $display("----Start the coefficient input(AXI-lite)----");
         config_write(12'h10, data_length);
         for(k=0; k< Tape_Num; k=k+1) begin
-            config_write(12'h20+k, coef[k]);
+            config_write(12'h20+4*k, coef[k]);
         end
         awvalid <= 0; wvalid <= 0;
         // read-back and check
         $display(" Check Coefficient ...");
         for(k=0; k < Tape_Num; k=k+1) begin
-            config_read_check(12'h20+k, coef[k], 32'hffffffff);
+            config_read_check(12'h20+4*k, coef[k], 32'hffffffff);
         end
         arvalid <= 0;
         $display(" Tape programming done ...");
